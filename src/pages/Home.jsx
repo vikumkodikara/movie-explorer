@@ -34,10 +34,20 @@ export default function Home() {
       try {
         const apiKey = import.meta.env.VITE_TMDB_API_KEY;
         let response;
-        try {
-          response = await axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=${apiKey}`);
-        } catch {
-          response = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`);
+        if (selectedGenre) {
+          response = await axios.get(
+            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${selectedGenre}&sort_by=popularity.desc`
+          );
+        } else {
+          try {
+            response = await axios.get(
+              `https://api.themoviedb.org/3/trending/movie/day?api_key=${apiKey}`
+            );
+          } catch {
+            response = await axios.get(
+              `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`
+            );
+          }
         }
 
         const data = response.data;
@@ -65,16 +75,14 @@ export default function Home() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [selectedGenre]);
 
-  const displayedMovies = selectedGenre
-    ? movies.filter((movie) => movie.genre_ids?.includes(selectedGenre))
-    : movies;
+  const currentGenreName = genres.find((g) => g.id === selectedGenre)?.name;
 
   return (
     <Container maxWidth="xl" sx={{ py: 3, minHeight: '80vh' }}>
       <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, textAlign: 'center', mt: 2 }}>
-        Trending Movies
+        {selectedGenre ? `${currentGenreName} Movies` : 'Trending Movies'}
       </Typography>
 
       {lastSearch && (
@@ -94,21 +102,19 @@ export default function Home() {
       )}
 
       {/* Genre Filter Buttons */}
-      {!loading && !error && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 1, mb: 4 }}>
-          {genres.map((g) => (
-            <Chip
-              key={g.name}
-              label={g.name}
-              clickable
-              color={selectedGenre === g.id ? 'primary' : 'default'}
-              variant={selectedGenre === g.id ? 'filled' : 'outlined'}
-              onClick={() => setSelectedGenre(g.id)}
-              sx={{ fontWeight: selectedGenre === g.id ? 'bold' : 'normal' }}
-            />
-          ))}
-        </Box>
-      )}
+      <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 1, mb: 4 }}>
+        {genres.map((g) => (
+          <Chip
+            key={g.name}
+            label={g.name}
+            clickable
+            color={selectedGenre === g.id ? 'primary' : 'default'}
+            variant={selectedGenre === g.id ? 'filled' : 'outlined'}
+            onClick={() => setSelectedGenre(g.id)}
+            sx={{ fontWeight: selectedGenre === g.id ? 'bold' : 'normal' }}
+          />
+        ))}
+      </Box>
 
       {loading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
@@ -131,8 +137,8 @@ export default function Home() {
             justifyItems: 'center',
           }}
         >
-          {Array.isArray(displayedMovies) && displayedMovies.length > 0 ? (
-            displayedMovies.map((movie) => (
+          {Array.isArray(movies) && movies.length > 0 ? (
+            movies.map((movie) => (
               movie && movie.id ? <MovieCard key={movie.id} movie={movie} /> : null
             ))
           ) : (
