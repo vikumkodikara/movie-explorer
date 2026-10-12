@@ -7,6 +7,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useNavigate, Link } from 'react-router-dom';
 import { ThemeContext } from '../context/ThemeContext';
 import { MovieContext } from '../context/MovieContext';
+import { AuthContext } from '../context/AuthContext';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -54,6 +55,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { toggleColorMode, mode } = useContext(ThemeContext);
   const { updateLastSearch } = useContext(MovieContext);
+  const { user, isAuthenticated, logout } = useContext(AuthContext);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -102,9 +104,26 @@ export default function Navbar() {
           <Button color="inherit" component={Link} to="/favorites" sx={{ ml: 1 }}>
             Favorites
           </Button>
-          <Button color="inherit" component={Link} to="/login" sx={{ ml: 1 }}>
-            Login
-          </Button>
+
+          {isAuthenticated ? (
+            <>
+              <Typography variant="body2" sx={{ ml: 2, color: 'white', fontWeight: 600, display: { xs: 'none', md: 'block' } }}>
+                Hi, {user?.username}
+              </Typography>
+              <Button color="inherit" onClick={logout} sx={{ ml: 1 }}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button color="inherit" component={Link} to="/login" sx={{ ml: 1 }}>
+                Login
+              </Button>
+              <Button color="inherit" component={Link} to="/signup" sx={{ ml: 1 }}>
+                Sign Up
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
     </Box>
