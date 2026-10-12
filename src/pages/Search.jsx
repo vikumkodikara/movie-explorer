@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Typography, Box, Button, CircularProgress } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Typography, Box, Button, CircularProgress, Container, Chip } from '@mui/material';
 import MovieCard from '../components/MovieCard';
+import { MovieContext } from '../context/MovieContext';
 
 export default function Search() {
   const { query } = useParams();
+  const navigate = useNavigate();
+  const { lastSearch } = useContext(MovieContext);
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -25,15 +29,11 @@ export default function Search() {
       setError(null);
       
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${query}&page=${page}`
         );
         
-        if (!response.ok) {
-          throw new Error("Something went wrong while fetching data. Please try again later.");
-        }
-        
-        const data = await response.json();
+        const data = response.data;
         
         setMovies((prevMovies) => {
           if (page === 1) return data.results;
@@ -58,10 +58,26 @@ export default function Search() {
   };
 
   return (
-    <Box sx={{ padding: '20px', minHeight: '80vh' }}>
-      <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center', fontWeight: 'bold' }}>
+    <Container maxWidth="xl" sx={{ py: 3, minHeight: '80vh' }}>
+      <Typography variant="h4" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
         Search Results for "{query}"
       </Typography>
+
+      {lastSearch && lastSearch.toLowerCase() !== query?.toLowerCase() && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, mb: 3 }}>
+          <Typography variant="body2" color="text.secondary">
+            Last Searched:
+          </Typography>
+          <Chip
+            label={lastSearch}
+            size="small"
+            color="primary"
+            variant="outlined"
+            clickable
+            onClick={() => navigate(`/search/${lastSearch}`)}
+          />
+        </Box>
+      )}
       
       {error && (
         <Typography variant="h6" color="error" align="center" sx={{ mt: 4 }}>
@@ -70,11 +86,18 @@ export default function Search() {
       )}
 
       {!error && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
+            gap: 3,
+            justifyItems: 'center',
+          }}
+        >
           {movies.map((movie) => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
-        </div>
+        </Box>
       )}
 
       {!error && movies.length === 0 && !loading && (
@@ -96,6 +119,6 @@ export default function Search() {
           </Button>
         )}
       </Box>
-    </Box>
+    </Container>
   );
 }
