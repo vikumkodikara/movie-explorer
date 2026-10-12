@@ -16,8 +16,9 @@ export default function MovieDetails() {
     useEffect(() => {
         const fetchMovieDetails = async () => {
             try {
+                const apiKey = import.meta.env.VITE_TMDB_API_KEY || "65322f0f7577a0c89e9d24adcd1bd86b";
                 const response = await axios.get(
-                    `https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_API_KEY}&append_to_response=videos,credits`
+                    `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=videos,credits`
                 );
                 setMovie(response.data);
             } catch (error) {
