@@ -164,6 +164,41 @@ export default function MovieDetails() {
                     )}
                 </Box>
             </Box>
+
+            {/* Embedded YouTube Trailer */}
+            {trailer && (
+                <Box sx={{ mt: 6, maxWidth: '1200px', mx: 'auto' }}>
+                    <Typography variant="h5" fontWeight="bold" gutterBottom>
+                        Official Trailer
+                    </Typography>
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            paddingTop: '56.25%',
+                            height: 0,
+                            overflow: 'hidden',
+                            borderRadius: '12px',
+                            boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+                            backgroundColor: '#000',
+                        }}
+                    >
+                        <iframe
+                            src={`https://www.youtube.com/embed/${trailer.key}`}
+                            title={`${movie.title} Trailer`}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                border: 'none',
+                            }}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    </Box>
+                </Box>
+            )}
         </Container>
     );
 }
