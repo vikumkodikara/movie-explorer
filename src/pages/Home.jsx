@@ -32,7 +32,7 @@ export default function Home() {
       setLoading(true);
       setError(null);
       try {
-        const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+        const apiKey = import.meta.env.VITE_TMDB_API_KEY || "65322f0f7577a0c89e9d24adcd1bd86b";
         let response;
         if (selectedGenre) {
           response = await axios.get(

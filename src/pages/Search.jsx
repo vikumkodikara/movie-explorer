@@ -27,10 +27,11 @@ export default function Search() {
       
       setLoading(true);
       setError(null);
-      
+
       try {
+        const apiKey = import.meta.env.VITE_TMDB_API_KEY || "65322f0f7577a0c89e9d24adcd1bd86b";
         const response = await axios.get(
-          `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${query}&page=${page}`
+          `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}&page=${page}`
         );
         
         const data = response.data;
