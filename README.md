@@ -2,6 +2,8 @@
 
 A web application designed for discovering, searching, and managing movies in real time using The Movie Database (TMDb) API. Built with React, Material-UI, and Axios.
 
+**Live Application**: [https://movieexpoler.netlify.app/](https://movieexpoler.netlify.app/)
+
 ---
 
 ## Table of Contents
@@ -14,7 +16,7 @@ A web application designed for discovering, searching, and managing movies in re
 - [Installation and Setup](#installation-and-setup)
 - [Available Scripts](#available-scripts)
 - [API Integration Details](#api-integration-details)
-- [Deployment](#deployment)
+- [Deployment and Live Demo](#deployment-and-live-demo)
 - [Author and Acknowledgements](#author-and-acknowledgements)
 
 ---
@@ -167,9 +169,21 @@ All requests include query parameters with the `api_key` defined in environment 
 
 ---
 
-## Deployment
+## Deployment and Live Demo
 
-The application is structured for deployment on modern static hosting platforms such as Vercel or Netlify.
+The application is deployed live on Netlify and also supports Vercel.
+
+### Live Demo
+- **Production URL**: [https://movieexpoler.netlify.app/](https://movieexpoler.netlify.app/)
+- **Hosting Platform**: Netlify
+- **SPA Routing**: Handled using `netlify.toml` and `public/_redirects` to support client-side routing.
+
+### Deploying to Netlify
+1. Link the GitLab repository to [Netlify](https://www.netlify.com).
+2. Configure build settings:
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist`
+3. Optional: Set environment variable `VITE_TMDB_API_KEY` under Site Configuration (the application includes an automated fallback if omitted).
 
 ### Deploying to Vercel
 1. Link your GitLab repository on [Vercel](https://vercel.com).
