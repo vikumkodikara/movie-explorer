@@ -16,8 +16,9 @@ export default function MovieDetails() {
     useEffect(() => {
         const fetchMovieDetails = async () => {
             try {
+                const apiKey = import.meta.env.VITE_TMDB_API_KEY || "65322f0f7577a0c89e9d24adcd1bd86b";
                 const response = await axios.get(
-                    `https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_API_KEY}&append_to_response=videos,credits`
+                    `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=videos,credits`
                 );
                 setMovie(response.data);
             } catch (error) {
@@ -163,6 +164,41 @@ export default function MovieDetails() {
                     )}
                 </Box>
             </Box>
+
+            {/* Embedded YouTube Trailer */}
+            {trailer && (
+                <Box sx={{ mt: 6, maxWidth: '1200px', mx: 'auto' }}>
+                    <Typography variant="h5" fontWeight="bold" gutterBottom>
+                        Official Trailer
+                    </Typography>
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            paddingTop: '56.25%',
+                            height: 0,
+                            overflow: 'hidden',
+                            borderRadius: '12px',
+                            boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+                            backgroundColor: '#000',
+                        }}
+                    >
+                        <iframe
+                            src={`https://www.youtube.com/embed/${trailer.key}`}
+                            title={`${movie.title} Trailer`}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                border: 'none',
+                            }}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    </Box>
+                </Box>
+            )}
         </Container>
     );
 }
