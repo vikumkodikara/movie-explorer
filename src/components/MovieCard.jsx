@@ -7,13 +7,17 @@ import { MovieContext } from '../context/MovieContext';
 
 export default function MovieCard({ movie }) {
   const navigate = useNavigate();
-  const { favorites, toggleFavorite } = useContext(MovieContext);
+  const { favorites = [], toggleFavorite } = useContext(MovieContext) || {};
 
-  const isFavorite = favorites.some((fav) => fav.id === movie.id);
+  if (!movie) return null;
+
+  const isFavorite = Array.isArray(favorites) ? favorites.some((fav) => fav?.id === movie.id) : false;
 
   const handleFavoriteClick = (e) => {
-    e.stopPropagation();
-    toggleFavorite(movie);
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (typeof toggleFavorite === 'function') {
+      toggleFavorite(movie);
+    }
   };
 
   const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : 'N/A';
@@ -22,40 +26,50 @@ export default function MovieCard({ movie }) {
 
   return (
     <Card 
-      sx={{ width: 250, margin: '15px' }}
-      onClick={() => navigate(`/movie/${movie.id}`)}
+      sx={{ 
+        width: '100%', 
+        maxWidth: 280, 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'space-between',
+        borderRadius: 2,
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: 6,
+        }
+      }}
     >
-      <CardActionArea>
+      <CardActionArea onClick={() => navigate(`/movie/${movie.id}`)}>
         <CardMedia
           component="img"
           height="375"
           image={imageUrl}
           alt={movie.title}
         />
-        <CardContent>
+        <CardContent sx={{ pb: 0 }}>
           <Typography gutterBottom variant="h6" component="div" noWrap title={movie.title}>
             {movie.title}
           </Typography>
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              {releaseYear}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ color: '#f5c518', fontWeight: 'bold', mr: 1 }}>
-                ⭐ {rating}
-              </Typography>
-              <IconButton 
-                onClick={handleFavoriteClick} 
-                size="small" 
-                sx={{ color: isFavorite ? 'red' : 'gray', p: 0 }}
-              >
-                {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-              </IconButton>
-            </Box>
-          </Box>
+          <Typography variant="body2" color="text.secondary">
+            {releaseYear}
+          </Typography>
         </CardContent>
       </CardActionArea>
+      
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, pb: 1, pt: 1 }}>
+        <Typography variant="body2" sx={{ color: '#f5c518', fontWeight: 'bold' }}>
+          ⭐ {rating}
+        </Typography>
+        <IconButton 
+          onClick={handleFavoriteClick} 
+          size="small" 
+          sx={{ color: isFavorite ? 'red' : 'gray' }}
+        >
+          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </IconButton>
+      </Box>
     </Card>
   );
 }
