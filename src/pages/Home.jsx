@@ -1,36 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { Typography, Box } from '@mui/material';
 import MovieCard from '../components/MovieCard';
 
 export default function Home() {
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchTrendingMovies = async () => {
       try {
-        const response = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${import.meta.env.VITE_TMDB_API_KEY}`);
+        const response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${import.meta.env.VITE_TMDB_API_KEY}`);
         const data = await response.json();
         setMovies(data.results);
       } catch (error) {
-        console.error("Error fetching movies:", error);
+        console.error("Error fetching trending movies:", error);
       }
     };
 
-    fetchMovies();
+    fetchTrendingMovies();
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', padding: '20px' }}>
-      {movies.map((movie) => (
-        <MovieCard 
-          key={movie.id} 
-          movie={{
-            id: movie.id,
-            title: movie.title,
-            description: movie.overview, 
-            image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null
-          }} 
-        />
-      ))}
-    </div>
+    <Box sx={{ padding: '20px' }}>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, textAlign: 'center', mt: 2 }}>
+        Trending Movies
+      </Typography>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+        {movies.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))}
+      </div>
+    </Box>
   );
 }
