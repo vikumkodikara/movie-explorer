@@ -4,8 +4,13 @@ export const MovieContext = createContext();
 
 export const MovieProvider = ({ children }) => {
   const [favorites, setFavorites] = useState(() => {
-    const localData = localStorage.getItem('favorites');
-    return localData ? JSON.parse(localData) : [];
+    try {
+      const localData = localStorage.getItem('favorites');
+      const parsed = localData ? JSON.parse(localData) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   });
 
   const [lastSearch, setLastSearch] = useState(() => {
@@ -21,12 +26,14 @@ export const MovieProvider = ({ children }) => {
   }, [lastSearch]);
 
   const toggleFavorite = (movie) => {
+    if (!movie || !movie.id) return;
     setFavorites((prev) => {
-      const isFav = prev.find((fav) => fav.id === movie.id);
+      const list = Array.isArray(prev) ? prev : [];
+      const isFav = list.find((fav) => fav?.id === movie.id);
       if (isFav) {
-        return prev.filter((fav) => fav.id !== movie.id);
+        return list.filter((fav) => fav?.id !== movie.id);
       } else {
-        return [...prev, movie];
+        return [...list, movie];
       }
     });
   };
